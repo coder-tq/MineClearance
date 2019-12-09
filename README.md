@@ -8,4 +8,6 @@ Linux实验结课作业。
 
 其他系统自行使用java编译器编译
 
-made by sdust 软件18-1wtq，wmy 软件18-3 lz
+auther ： sdust 软件18-1wtq，wmy 软件18-3 lz
+
+e-mail ： 909413805@qq.com
