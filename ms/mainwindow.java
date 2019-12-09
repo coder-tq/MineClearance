@@ -17,23 +17,22 @@ public class mainwindow{
 
 class Play extends JFrame implements ActionListener{
 
-	public int len;
-	public int row,col,last;
-	public JPanel headPanel,mpPanel;
-	public JLabel label1;
-	public int mp[][];
+	public int len;//格子边长
+	public int row,col,last;//行、列、剩余雷数
+	public JPanel headPanel;
+	public JLabel label1;//文本框
+	public int mp[][];//雷阵
 	public Container contentPane;
-	public JButton[][] btns;
-	public int layminesflag;
-	public void go(int row,int col,int num)
+	public JButton[][] btns;//按钮
+	public int layminesflag;//是否布雷，0为未布雷，1为已布雷
+	public void go(int row,int col,int num)//核心函数
 	{
-		this.len = Math.min(50, Math.min(600/col, 800/row));
-		System.out.println(len);
+		this.len = Math.min(50, Math.min(600/col, 800/row));//根据行列计算边长
 		this.row = row;
 		this.col = col;
 		this.last = num;
-		layminesflag = 0;
-		initGUI();
+		layminesflag = 0;//初始化为0
+		initGUI();//加载gui
 	}
 	public void initGUI() 
 	{
@@ -44,7 +43,7 @@ class Play extends JFrame implements ActionListener{
 		this.setSize(col*this.len+10, row*this.len+45);
 		this.setDefaultCloseOperation(3);
 		this.setLocationRelativeTo(null);
-		this.setResizable(false);
+		//this.setResizable(false);
 		headPanel = new JPanel();
 		headPanel.setLayout(new FlowLayout());
 		label1 = new JLabel("剩余地雷数量： "+last);
@@ -54,8 +53,7 @@ class Play extends JFrame implements ActionListener{
 		contentPane.add(headPanel);
 		mp = new int[row][col];
 		btns = new JButton[row][col];
-		//System.out.println(row + " " + col);
-		loadBtns();
+		loadBtns();//加载按钮
 		this.setSize(col*this.len+10, row*this.len+35);
 		this.repaint();
 	}
@@ -65,7 +63,6 @@ class Play extends JFrame implements ActionListener{
 		{
 			for(int j = 0; j < col; j++)
 			{
-				//System.out.println(i + " " + j);
 				btns[i][j] = new JButton("");
 				btns[i][j].setMargin(new Insets(0, 0, 0, 0));
 				btns[i][j].setBounds(j*this.len+5, i*this.len+30, this.len, this.len);
@@ -93,10 +90,10 @@ class Play extends JFrame implements ActionListener{
 			{
 				for(int j = 0; j < col; j++)
 				{
-					if(!btns[i][j].isEnabled()) continue;
+					if(!btns[i][j].isEnabled()) continue;//若按钮被按下过直接跳过
 					if(e.getSource() == btns[i][j])
 					{
-						if (e.getButton() == MouseEvent.BUTTON3) 
+						if (e.getButton() == MouseEvent.BUTTON3)//右键按下 
 						{
 							if(btns[i][j].getText() == "")
 							{
@@ -111,24 +108,24 @@ class Play extends JFrame implements ActionListener{
 								label1.setText("剩余地雷数量： "+last);
 							}
 						}
-						else if(e.getButton() == MouseEvent.BUTTON1)
+						else if(e.getButton() == MouseEvent.BUTTON1)//左键按下
 						{
-							if(btns[i][j].getText() == "🏴") continue;
+							if(btns[i][j].getText() == "🏴") continue;//若按钮插旗则跳过
 							if(mp[i][j] == 1)
 							{
 								btns[i][j].setText("💣");
 								doEnd(false);
 								continue;
 							}
-							DFS(i,j);
-							isEnd();
+							DFS(i,j);//踩雷算法，深度优先搜索
+							isEnd();//判断是否获胜
 						}
 					}
 				}
 			}
 		}
 	}
-	int[][] pos = {{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1}};
+	int[][] pos = {{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1}};//方向数组，用于深度优先搜索
 	public void DFS(int x,int y)
 	{
 		if(layminesflag == 0)
@@ -144,15 +141,12 @@ class Play extends JFrame implements ActionListener{
 		{
 			int temx = x+pos[i][0];
 			int temy = y+pos[i][1];
-			//System.out.println(temx+" "+temy);
 			if(temx > row-1 || temy > col-1 || temx < 0 || temy < 0) continue;
-			//System.out.println(mp[temx][temy]);
 			if(mp[temx][temy] == 1)
 			{
 				sum++;
 			}
 		}
-		//System.out.println(x+" "+ y+" "+sum);
 		if(sum != 0)
 		{
 			btns[x][y].setText(""+sum);
@@ -171,7 +165,7 @@ class Play extends JFrame implements ActionListener{
 	}
 	public Random ranx = new Random();
 	public Random rany = new Random();
-	public void laymines(int x,int y,int num)
+	public void laymines(int x,int y,int num)//布雷算法，模拟微软，在按下的按钮周围9格必定无雷
 	{
 		mp[x][y] = 1;
 		for(int i = 0; i < 8; i++)
@@ -179,9 +173,8 @@ class Play extends JFrame implements ActionListener{
 			if(x+pos[i][0] > row-1 || y+pos[i][1] > col-1 || x+pos[i][0] < 0 || y+pos[i][1] < 0) continue;
 			mp[x+pos[i][0]][y+pos[i][1]] = 1;
 		}
-		while(num > 0)
+		while(num > 0)//布雷
 		{
-			//System.out.println(num);
 			int randx = ranx.nextInt(row);
 			int randy = rany.nextInt(col);
 			if(mp[randx][randy] == 1) continue;
@@ -205,7 +198,7 @@ class Play extends JFrame implements ActionListener{
 		{
 			for(int j = 0; j < col; j++)
 			{
-				if(mp[i][j] == 0&&btns[i][j].isEnabled()) {flag = 1; break;}
+				if(mp[i][j] == 0&&btns[i][j].isEnabled()) {flag = 1; break;}//还有没按下且不是雷的按钮
 			}
 		}
 		if(flag == 0) {
@@ -213,7 +206,7 @@ class Play extends JFrame implements ActionListener{
 			doEnd(true);
 		}
 	}
-	public void doEnd(boolean flag)
+	public void doEnd(boolean flag)//结束游戏，弹出重新开始框，锁定游戏主界面，显示所有地雷，判断插旗对错
 	{
 		for(int i = 0; i < row; i++)
 		{
@@ -222,7 +215,7 @@ class Play extends JFrame implements ActionListener{
 				if(!btns[i][j].isEnabled()) continue;
 				if(btns[i][j].getText() == "🏴")
 				{
-					if(mp[i][j] == 1) btns[i][j].setText("√");
+					if(mp[i][j] == 1) btns[i][j].setText("✔");
 					else btns[i][j].setText("×");
 				}
 				else if(mp[i][j] == 1) {btns[i][j].setText("💣");btns[i][j].setEnabled(false);}
